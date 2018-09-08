@@ -1,0 +1,30 @@
+version: '3'
+services:
+
+  mongodb-test:
+    image: mongo:3.2.18
+    volumes:
+      - data-volumes:/data/db
+    ports:
+      - '27017:27017'
+
+  mongodb_exporter:
+    image: targetprocess/mongodb_exporter:latest
+    ports:
+      - "9001:9001"
+    environment:
+      MONGODB_URL: "mongodb-test:27017"
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yml:/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/prometheus.yml'
+    ports:
+      - '9090:9090'
+
+volumes:
+  data-volumes:
+  prometheus_data:
